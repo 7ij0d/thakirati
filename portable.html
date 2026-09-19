@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#06080D" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>ذاكرتي | المساعد الشخصي لمنع النسيان</title>
+
+  <!-- Google Fonts: IBM Plex Sans Arabic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            obsidian: {
+              950: '#06080D',
+              900: '#0C101A',
+              850: '#111726',
+              800: '#172033',
+              750: '#1E2B45',
+            },
+            brand: {
+              400: '#38BDF8',
+              500: '#0EA5E9',
+              600: '#0284C7',
+              700: '#0369A1',
+            }
+          },
+          fontFamily: {
+            sans: ['"IBM Plex Sans Arabic"', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      background-color: #06080D;
+      color: #E2E8F0;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .elite-card {
+      background-color: #0C101A;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 4px 20px -2px rgba(0,0,0,0.35), inset 0 1px 0 0 rgba(255,255,255,0.08);
+      border-radius: 14px;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .elite-card:hover {
+      border-color: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 8px 26px -4px rgba(0,0,0,0.45), inset 0 1px 0 0 rgba(255,255,255,0.12);
+    }
+    .tactile-btn {
+      transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.18);
+    }
+    .tactile-btn:hover { transform: translateY(-1px); }
+    .tactile-btn:active { transform: translateY(1px) scale(0.975); }
+    .pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%; background-color: #10B981;
+      box-shadow: 0 0 8px #10B981; animation: pulse-ring 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+    .pulse-dot-urgent {
+      width: 7px; height: 7px; border-radius: 50%; background-color: #EF4444;
+      box-shadow: 0 0 8px #EF4444; animation: pulse-ring 1s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    }
+    @keyframes pulse-ring {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #06080D; }
+    ::-webkit-scrollbar-thumb { background: #1C2638; border-radius: 9999px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col pb-24 md:pb-8">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-40 bg-obsidian-950/85 backdrop-blur-md border-b border-slate-800 px-4 sm:px-6 py-3">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center font-bold text-white shadow-md shadow-brand-500/20">
+          🧠
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-lg font-extrabold text-slate-100 tracking-tight">ذاكـرتـي</h1>
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand-950 text-brand-300 border border-brand-500/30">
+              نسخة محمولة 100%
+            </span>
+          </div>
+          <p id="live-clock" class="text-[11px] font-mono text-slate-400"></p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="toggleSound()" id="sound-btn" class="p-2 rounded-xl border border-slate-800 bg-obsidian-900 text-brand-400 hover:bg-slate-800" title="كتم/تشغيل الصوت">
+          🔊
+        </button>
+        <button onclick="openSyncModal()" class="tactile-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white flex items-center gap-1.5 shadow-tactile-btn">
+          📱 <span>الآيباد والنسخ</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main App Shell -->
+  <div class="max-w-6xl mx-auto w-full px-4 sm:px-6 pt-6 flex-1 flex flex-col md:flex-row gap-6">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="hidden md:flex flex-col w-56 shrink-0 space-y-2 sticky top-20 self-start">
+      <div class="p-2 rounded-2xl bg-obsidian-900 border border-slate-800 space-y-1">
+        <button onclick="switchTab('today')" id="tab-btn-today" class="tab-btn w-full flex items-center justify-between p-3 rounded-xl border text-xs font-bold transition-all text-right bg-brand-500/15 border-brand-500/40 text-brand-300">
+          <div class="flex items-center gap-2.5">
+            <span>🎯</span>
+            <span class="text-sm">رادار اليوم</span>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-md bg-obsidian-950 text-slate-400">المهام</span>
+        </button>
+
+        <button onclick="switchTab('where')" id="tab-btn-where" class="tab-btn w-full flex items-center justify-between p-3 rounded-xl border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 text-xs font-bold transition-all text-right">
+          <div class="flex items-center gap-2.5">
+            <span>📍</span>
+            <span class="text-sm">وين حطيت؟</span>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-md bg-obsidian-950 text-slate-400">الأماكن</span>
+        </button>
+
+        <button onclick="switchTab('brain')" id="tab-btn-brain" class="tab-btn w-full flex items-center justify-between p-3 rounded-xl border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 text-xs font-bold transition-all text-right">
+          <div class="flex items-center gap-2.5">
+            <span>⚡</span>
+            <span class="text-sm">تفريغ وصوت</span>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-md bg-obsidian-950 text-slate-400">فوري</span>
+        </button>
+
+        <button onclick="switchTab('done')" id="tab-btn-done" class="tab-btn w-full flex items-center justify-between p-3 rounded-xl border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 text-xs font-bold transition-all text-right">
+          <div class="flex items-center gap-2.5">
+            <span>🏆</span>
+            <span class="text-sm">ما أنجزته</span>
+          </div>
+          <span class="text-[10px] px-2 py-0.5 rounded-md bg-obsidian-950 text-slate-400">الفخر</span>
+        </button>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-gradient-to-br from-obsidian-900 to-brand-950/40 border border-slate-800">
+        <div class="flex items-center gap-2 text-brand-300 font-bold text-xs mb-1">
+          <span>📲</span>
+          <span>للآيباد والهاتف</span>
+        </div>
+        <p class="text-[11px] text-slate-400 leading-relaxed">
+          يمكنك إرسال هذا الملف لنفسك عبر تيليجرام أو واتساب وفتحه على الآيباد بنقرة واحدة.
+        </p>
+      </div>
+    </aside>
+
+    <!-- Main Container Views -->
+    <main class="flex-1 min-w-0">
+
+      <!-- View 1: Today Radar -->
+      <section id="view-today" class="space-y-6">
+        <!-- Banner -->
+        <div class="elite-card p-5 sm:p-6 bg-gradient-to-br from-obsidian-900 via-obsidian-900 to-slate-900">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="pulse-dot"></span>
+                <span class="text-xs font-bold text-brand-400 uppercase tracking-wider">رادار اليوم المباشر</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-extrabold text-slate-100 mt-1">جدول مهامك وأولويات اليوم</h2>
+              <p class="text-xs sm:text-sm text-slate-400 mt-1">ركّز على ما هو أمامك ولا تدع النسيان يشتت ذهنك.</p>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <button onclick="openTaskModal(true)" class="tactile-btn px-3.5 py-2.5 rounded-xl text-xs font-bold bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 flex items-center gap-1.5">
+                <span>✨</span> <span>إنجاز مفاجئ</span>
+              </button>
+              <button onclick="openTaskModal(false)" class="tactile-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-brand-600 hover:bg-brand-500 text-white flex items-center gap-2 shadow-tactile-btn">
+                <span>➕</span> <span>مهمة جديدة</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="mt-5 pt-4 border-t border-slate-800">
+            <div class="flex items-center justify-between text-xs mb-2">
+              <span id="progress-label" class="text-slate-400">نسبة الإنجاز</span>
+              <span id="progress-percent" class="font-mono font-bold text-brand-400">0%</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-obsidian-950 overflow-hidden border border-slate-800">
+              <div id="progress-bar-fill" class="h-full bg-gradient-to-r from-brand-600 to-emerald-500 transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Missed Rollover Banner Container -->
+        <div id="rollover-container"></div>
+
+        <!-- Clock Tasks Section -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-sm">⏰</span>
+              <h3 class="font-bold text-slate-100 text-sm sm:text-base">مهام بموعد وتوقيت محدد</h3>
+            </div>
+            <span class="text-xs text-slate-400">عدّاد تنازلي وجرس تنبيه</span>
+          </div>
+          <div id="clock-tasks-list" class="grid gap-2.5"></div>
+        </div>
+
+        <!-- Anytime Tasks Section -->
+        <div class="space-y-3 pt-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-sm">📋</span>
+              <h3 class="font-bold text-slate-100 text-sm sm:text-base">مهام مفتوحة لليوم</h3>
+            </div>
+            <span class="text-xs text-slate-400">مرتبة حسب الأولوية</span>
+          </div>
+          <div id="anytime-tasks-list" class="grid gap-2.5"></div>
+        </div>
+      </section>
+
+      <!-- View 2: Where Is It -->
+      <section id="view-where" class="space-y-6 hidden">
+        <div class="elite-card p-5 sm:p-6 bg-gradient-to-br from-obsidian-900 to-sky-950/40">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+                <span class="text-xs font-bold text-sky-400 uppercase tracking-wider">خزينة الأماكن</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-extrabold text-slate-100 mt-1">وين حطيت أشيائي؟</h2>
+              <p class="text-xs sm:text-sm text-slate-400 mt-1">ابحث فوراً عن أي غرض نسيت مكانه لتجده في ثوانٍ.</p>
+            </div>
+            <button onclick="openItemModal()" class="tactile-btn px-4 py-2.5 rounded-xl text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white flex items-center gap-2 shrink-0">
+              <span>➕</span> <span>تسجيل مكان غرض جديد</span>
+            </button>
+          </div>
+
+          <!-- Search -->
+          <div class="mt-5 relative">
+            <input type="text" id="where-search" oninput="renderItems()" placeholder="ابحث هنا: جواز، مفتاح، شاحن، بطاقة..." class="w-full bg-obsidian-950 border border-slate-700/80 rounded-2xl py-3.5 pr-11 pl-4 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500">
+            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+          </div>
+
+          <!-- Room Filters -->
+          <div class="mt-4 flex flex-wrap gap-2" id="room-filter-container"></div>
+        </div>
+
+        <div id="items-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </section>
+
+      <!-- View 3: Brain Dump & Voice -->
+      <section id="view-brain" class="space-y-6 hidden">
+        <div class="elite-card p-5 sm:p-6 bg-gradient-to-br from-obsidian-900 to-purple-950/30">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+            <span class="text-xs font-bold text-purple-400 uppercase tracking-wider">التفريغ الفوري</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-extrabold text-slate-100">فرّغ أفكارك قبل أن تنساها</h2>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">اكتب ما يدور في ذهنك أو تحدث بالميكروفون ليتحول كلامك فوراً إلى نص.</p>
+
+          <div class="mt-5 relative">
+            <input type="text" id="brain-input" placeholder="اكتب فكرة أو مهمة خطرت ببالك..." class="w-full bg-obsidian-950 border border-slate-700 rounded-2xl py-3.5 pr-4 pl-24 text-sm text-slate-100 focus:outline-none focus:border-purple-500">
+            <div class="absolute left-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+              <button onclick="toggleSpeech()" id="mic-btn" class="p-2 rounded-xl text-slate-400 hover:text-purple-400 hover:bg-slate-800" title="تحدث بالعربية">
+                🎤
+              </button>
+              <button onclick="addBrainNote()" class="tactile-btn p-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white shadow-tactile-btn">
+                ⏎
+              </button>
+            </div>
+          </div>
+          <div id="mic-status" class="hidden mt-2 text-xs text-red-400 flex items-center gap-1">
+            <span class="pulse-dot-urgent"></span> جاري الاستماع لصوتك الآن... تحدث بوضوح
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <h3 class="font-bold text-slate-200 text-sm sm:text-base">الأفكار المسجلة</h3>
+          <div id="brain-notes-list" class="grid gap-3"></div>
+        </div>
+      </section>
+
+      <!-- View 4: Accomplishments -->
+      <section id="view-done" class="space-y-6 hidden">
+        <div class="elite-card p-5 sm:p-6 bg-gradient-to-br from-obsidian-900 to-emerald-950/30 flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+              <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">سجل الفخر</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-slate-100 flex items-center gap-2">
+              <span>ما أنجزته اليوم</span>
+              <span id="done-count-badge" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-sm font-mono border border-emerald-500/30">0</span>
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">كل إنجاز صغير اليوم يمنحك راحة البال والسيطرة.</p>
+          </div>
+          <div class="text-4xl">🏆</div>
+        </div>
+
+        <div id="done-tasks-list" class="grid gap-3"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-obsidian-950/95 backdrop-blur-lg border-t border-slate-800 px-2 py-2">
+    <div class="grid grid-cols-4 gap-1 max-w-lg mx-auto">
+      <button onclick="switchTab('today')" id="mob-tab-today" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-slate-800 text-brand-300 font-bold min-h-[48px]">
+        <span>🎯</span>
+        <span class="text-[11px] mt-1">رادار اليوم</span>
+      </button>
+      <button onclick="switchTab('where')" id="mob-tab-where" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-slate-400 min-h-[48px]">
+        <span>📍</span>
+        <span class="text-[11px] mt-1">وين حطيت؟</span>
+      </button>
+      <button onclick="switchTab('brain')" id="mob-tab-brain" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-slate-400 min-h-[48px]">
+        <span>⚡</span>
+        <span class="text-[11px] mt-1">تفريغ</span>
+      </button>
+      <button onclick="switchTab('done')" id="mob-tab-done" class="flex flex-col items-center justify-center py-2 px-1 rounded-xl text-slate-400 min-h-[48px]">
+        <span>🏆</span>
+        <span class="text-[11px] mt-1">إنجازاتي</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Add Task Modal -->
+  <div id="task-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-sm hidden">
+    <div class="w-full max-w-lg rounded-2xl bg-obsidian-900 border border-slate-700 p-5 sm:p-6 shadow-2xl relative">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <h3 id="task-modal-title" class="text-lg font-bold text-slate-100">إضافة مهمة جديدة</h3>
+        <button onclick="closeTaskModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+      <form onsubmit="saveTask(event)" class="mt-4 space-y-4">
+        <input type="hidden" id="task-is-spontaneous" value="false">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">عنوان المهمة</label>
+          <input type="text" id="task-title" required placeholder="مثال: أخذ الدواء، موعد الطبيب..." class="w-full bg-obsidian-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">ملاحظات إضافية (اختياري)</label>
+          <textarea id="task-notes" rows="2" placeholder="أي تفاصيل أخرى..." class="w-full bg-obsidian-950 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-500 resize-none"></textarea>
+        </div>
+        <div id="task-time-box" class="p-3.5 rounded-xl bg-obsidian-950 border border-slate-800 space-y-2">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="task-is-timed" onchange="document.getElementById('time-picker-row').classList.toggle('hidden', !this.checked)" class="rounded text-brand-600">
+            <span class="text-xs font-semibold text-slate-200">هل المهمة محددة بوقت وساعة معينة؟</span>
+          </label>
+          <div id="time-picker-row" class="hidden flex items-center gap-3 pt-2">
+            <span class="text-xs text-slate-400">الوقت:</span>
+            <input type="time" id="task-time" value="12:00" class="bg-obsidian-900 border border-slate-700 rounded-lg px-3 py-1 text-sm font-mono text-brand-300">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">الأولوية</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label class="cursor-pointer">
+              <input type="radio" name="priority" value="urgent" class="peer hidden">
+              <div class="p-2 rounded-xl border border-slate-800 text-center text-xs font-bold text-slate-400 peer-checked:border-red-500 peer-checked:bg-red-950/60 peer-checked:text-red-300">عاجل جداً</div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="priority" value="important" checked class="peer hidden">
+              <div class="p-2 rounded-xl border border-slate-800 text-center text-xs font-bold text-slate-400 peer-checked:border-amber-500 peer-checked:bg-amber-950/60 peer-checked:text-amber-300">مهم</div>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="priority" value="normal" class="peer hidden">
+              <div class="p-2 rounded-xl border border-slate-800 text-center text-xs font-bold text-slate-400 peer-checked:border-sky-500 peer-checked:bg-sky-950/60 peer-checked:text-sky-300">عادي</div>
+            </label>
+          </div>
+        </div>
+        <div class="pt-2 flex justify-end gap-3">
+          <button type="button" onclick="closeTaskModal()" class="px-4 py-2 text-xs text-slate-400">إلغاء</button>
+          <button type="submit" class="tactile-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-brand-600 text-white shadow-tactile-btn">حفظ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Item Modal -->
+  <div id="item-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-sm hidden">
+    <div class="w-full max-w-lg rounded-2xl bg-obsidian-900 border border-slate-700 p-5 sm:p-6 shadow-2xl relative">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <h3 class="text-lg font-bold text-slate-100">وين حطيت الغرض؟</h3>
+        <button onclick="closeItemModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+      <form onsubmit="saveItem(event)" class="mt-4 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">اسم الغرض</label>
+          <input type="text" id="item-name" required placeholder="مثال: مفتاح السيارة، جواز السفر..." class="w-full bg-obsidian-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-sky-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">المكان بالتفصيل الدقيق</label>
+          <textarea id="item-location" required rows="2" placeholder="مثال: في الدرج الثاني لمكتب الغرفة داخل ملف أزرق..." class="w-full bg-obsidian-950 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-100 focus:outline-none focus:border-sky-500 resize-none"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">الغرفة أو القسم</label>
+          <select id="item-room" class="w-full bg-obsidian-950 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-200">
+            <option value="bedroom">غرفة النوم</option>
+            <option value="office">المكتب</option>
+            <option value="car">السيارة</option>
+            <option value="bag">الحقيبة</option>
+            <option value="living">الصالة / المدخل</option>
+            <option value="kitchen">المطبخ</option>
+            <option value="other">مكان آخر</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5">ملاحظة إضافية (اختياري)</label>
+          <input type="text" id="item-notes" placeholder="ملاحظة للتذكر..." class="w-full bg-obsidian-950 border border-slate-700 rounded-xl px-4 py-2 text-sm text-slate-100">
+        </div>
+        <div class="pt-2 flex justify-end gap-3">
+          <button type="button" onclick="closeItemModal()" class="px-4 py-2 text-xs text-slate-400">إلغاء</button>
+          <button type="submit" class="tactile-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-sky-600 text-white shadow-tactile-btn">حفظ المكان</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Sync Modal -->
+  <div id="sync-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-obsidian-950/85 backdrop-blur-md hidden">
+    <div class="w-full max-w-md rounded-2xl bg-obsidian-900 border border-slate-700 p-5 shadow-2xl relative space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="font-bold text-slate-100">النسخ الاحتياطي والآيباد</h3>
+        <button onclick="closeSyncModal()" class="text-slate-400 hover:text-white">✕</button>
+      </div>
+      <p class="text-xs text-slate-300 leading-relaxed">
+        بياناتك مخزنة محلياً في هذا المتصفح بأمان. يمكنك تحميل نسخة احتياطية لنقلها للآيباد في أي وقت.
+      </p>
+      <div class="grid grid-cols-2 gap-3 pt-2">
+        <button onclick="exportJSON()" class="tactile-btn p-3 rounded-xl bg-obsidian-950 border border-slate-700 text-xs font-bold text-emerald-300 flex flex-col items-center gap-1.5">
+          <span class="text-lg">📥</span>
+          <span>تصدير نسخة (JSON)</span>
+        </button>
+        <label class="tactile-btn cursor-pointer p-3 rounded-xl bg-obsidian-950 border border-slate-700 text-xs font-bold text-sky-300 flex flex-col items-center gap-1.5">
+          <span class="text-lg">📤</span>
+          <span>استيراد نسخة</span>
+          <input type="file" accept=".json" onchange="importJSON(event)" class="hidden">
+        </label>
+      </div>
+      <div id="sync-status" class="text-xs text-center font-bold text-brand-300 hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    // Pure Web Audio Synthesizer
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-btn').innerText = soundEnabled ? '🔊' : '🔇';
+      if (soundEnabled) playClick();
+    }
+
+    function playClick() {
+      if (!soundEnabled) return;
+      initAudio();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(500, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.04);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.04);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.04);
+    }
+
+    function playChime() {
+      if (!soundEnabled) return;
+      initAudio();
+      [523.25, 659.25, 783.99].forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        const t = audioCtx.currentTime + i * 0.08;
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(0.001, t);
+        gain.gain.linearRampToValueAtTime(0.12, t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(t);
+        osc.stop(t + 0.3);
+      });
+    }
+
+    // Storage Management
+    const STORAGE_KEY_TASKS = 'thakirati_tasks_v1';
+    const STORAGE_KEY_ITEMS = 'thakirati_items_v1';
+    const STORAGE_KEY_BRAIN = 'thakirati_brain_v1';
+
+    function getTodayStr() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function loadInitialData() {
+      const today = getTodayStr();
+      if (!localStorage.getItem(STORAGE_KEY_TASKS)) {
+        const initialTasks = [
+          {
+            id: 't-1',
+            title: 'أخذ الدواء أو الفيتامينات الصباحية',
+            notes: 'بعد الإفطار مباشرة',
+            date: today,
+            time: '10:00',
+            isTimeSpecific: true,
+            priority: 'urgent',
+            completed: false
+          },
+          {
+            id: 't-2',
+            title: 'مراجعة وترتيب أولويات اليوم في ذاكرتي',
+            notes: 'تحديث أماكن أي أغراض تم نقلها',
+            date: today,
+            isTimeSpecific: false,
+            priority: 'important',
+            completed: false
+          }
+        ];
+        localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(initialTasks));
+      }
+
+      if (!localStorage.getItem(STORAGE_KEY_ITEMS)) {
+        const initialItems = [
+          {
+            id: 'i-1',
+            name: 'جواز السفر وكتيب العائلة',
+            location: 'الدرج الثاني في مكتب الغرفة، داخل ملف شفاف أزرق',
+            room: 'bedroom',
+            notes: 'معه صور شخصية إضافية',
+            updatedAt: new Date().toISOString()
+          },
+          {
+            id: 'i-2',
+            name: 'مفتاح السيارة الاحتياطي',
+            location: 'الدرج الصغير في مدخل الشقة داخل العلبة الخشبية',
+            room: 'living',
+            notes: 'مع الميدالية الفضية',
+            updatedAt: new Date().toISOString()
+          },
+          {
+            id: 'i-3',
+            name: 'شاحن الآيباد وقلم Apple Pencil',
+            location: 'في الجيب الأمامي لحقيبة الظهر',
+            room: 'bag',
+            notes: 'أرجعه دائماً بعد الانتهاء',
+            updatedAt: new Date().toISOString()
+          }
+        ];
+        localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(initialItems));
+      }
+    }
+
+    // Ticking Clock
+    function updateClock() {
+      const now = new Date();
+      const d = now.toLocaleDateString('ar-LY', { weekday: 'long', day: 'numeric', month: 'long' });
+      const t = now.toLocaleTimeString('ar-LY', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById('live-clock').innerText = `${d} - ${t}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Tab Switching
+    function switchTab(tabId) {
+      playClick();
+      ['today', 'where', 'brain', 'done'].forEach(id => {
+        document.getElementById(`view-${id}`).classList.toggle('hidden', id !== tabId);
+        const desktopBtn = document.getElementById(`tab-btn-${id}`);
+        const mobBtn = document.getElementById(`mob-tab-${id}`);
+        if (desktopBtn) {
+          desktopBtn.className = id === tabId
+            ? 'tab-btn w-full flex items-center justify-between p-3 rounded-xl border text-xs font-bold transition-all text-right bg-brand-500/15 border-brand-500/40 text-brand-300'
+            : 'tab-btn w-full flex items-center justify-between p-3 rounded-xl border border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 text-xs font-bold transition-all text-right';
+        }
+        if (mobBtn) {
+          mobBtn.className = id === tabId
+            ? 'flex flex-col items-center justify-center py-2 px-1 rounded-xl bg-slate-800 text-brand-300 font-bold min-h-[48px]'
+            : 'flex flex-col items-center justify-center py-2 px-1 rounded-xl text-slate-400 min-h-[48px]';
+        }
+      });
+      if (tabId === 'today') renderToday();
+      if (tabId === 'where') renderItems();
+      if (tabId === 'brain') renderBrain();
+      if (tabId === 'done') renderDone();
+    }
+
+    // Render Today Tasks
+    function renderToday() {
+      const tasks = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]');
+      const today = getTodayStr();
+
+      // Check Rollover Missed Tasks
+      const missed = tasks.filter(t => t.date < today && !t.completed);
+      const rolloverBox = document.getElementById('rollover-container');
+      if (missed.length > 0) {
+        rolloverBox.innerHTML = `
+          <div class="rounded-2xl bg-amber-950/40 border border-amber-500/40 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 text-amber-300 font-bold text-sm">
+                <span>🔄</span>
+                <span>مهام من الأيام السابقة لم تكتمل (${missed.length})</span>
+              </div>
+              <p class="text-xs text-slate-300 mt-1">هل ترغب في ترحيلها إلى جدول اليوم حتى لا تنساها؟</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="dismissMissed()" class="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-red-400">حذفها</button>
+              <button onclick="rolloverMissed()" class="tactile-btn px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 text-obsidian-950 shadow-sm">ترحيل الكل لليوم</button>
+            </div>
+          </div>
+        `;
+      } else {
+        rolloverBox.innerHTML = '';
+      }
+
+      // Today's active tasks
+      const todayTasks = tasks.filter(t => t.date === today);
+      const clockTasks = todayTasks.filter(t => t.isTimeSpecific && !t.completed).sort((a,b) => (a.time||'').localeCompare(b.time||''));
+      const priorityOrder = { urgent: 0, important: 1, normal: 2 };
+      const anytimeTasks = todayTasks.filter(t => !t.isTimeSpecific && !t.completed).sort((a,b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+      const completedTasks = todayTasks.filter(t => t.completed);
+
+      // Progress
+      const total = todayTasks.length;
+      const done = completedTasks.length;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      document.getElementById('progress-label').innerText = `نسبة إنجاز اليوم (${done} من ${total})`;
+      document.getElementById('progress-percent').innerText = `${pct}%`;
+      document.getElementById('progress-bar-fill').style.width = `${pct}%`;
+
+      // Render Clock
+      const clockList = document.getElementById('clock-tasks-list');
+      if (clockTasks.length === 0) {
+        clockList.innerHTML = '<div class="rounded-xl border border-dashed border-slate-800 p-6 text-center text-xs text-slate-500">لا توجد مواعيد محددة بالساعة اليوم.</div>';
+      } else {
+        clockList.innerHTML = clockTasks.map(t => createTaskCard(t)).join('');
+      }
+
+      // Render Anytime
+      const anytimeList = document.getElementById('anytime-tasks-list');
+      if (anytimeTasks.length === 0) {
+        anytimeList.innerHTML = '<div class="rounded-xl border border-dashed border-slate-800 p-6 text-center text-xs text-slate-500">رائع! لا توجد مهام معلقة اليوم.</div>';
+      } else {
+        anytimeList.innerHTML = anytimeTasks.map(t => createTaskCard(t)).join('');
+      }
+    }
+
+    function createTaskCard(t) {
+      const pMap = {
+        urgent: { text: 'عاجل جداً', cls: 'bg-red-950/80 text-red-300 border-red-500/40' },
+        important: { text: 'مهم', cls: 'bg-amber-950/80 text-amber-300 border-amber-500/40' },
+        normal: { text: 'عادي', cls: 'bg-slate-800/80 text-slate-300 border-slate-700' }
+      };
+      const p = pMap[t.priority] || pMap.normal;
+
+      return `
+        <div onclick="toggleTaskDone('${t.id}')" class="elite-card p-4 flex items-start gap-3 cursor-pointer group">
+          <div class="w-6 h-6 rounded-lg border border-slate-600 bg-obsidian-950 group-hover:border-brand-400 flex items-center justify-center shrink-0 mt-0.5"></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap mb-1">
+              ${t.time ? `<span class="text-xs font-mono font-bold text-brand-300 bg-brand-950/80 px-2 py-0.5 rounded-full border border-brand-500/30">⏰ ${t.time}</span>` : ''}
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border ${p.cls}">${p.text}</span>
+              ${t.rolledOver ? `<span class="text-[10px] bg-indigo-950/80 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/30">مرحلة من أمس</span>` : ''}
+            </div>
+            <h4 class="text-sm font-semibold text-slate-100">${t.title}</h4>
+            ${t.notes ? `<p class="text-xs text-slate-400 mt-1">${t.notes}</p>` : ''}
+          </div>
+          <button onclick="event.stopPropagation(); deleteTask('${t.id}')" class="opacity-0 group-hover:opacity-100 p-1 text-slate-500 hover:text-red-400 text-sm">🗑️</button>
+        </div>
+      `;
+    }
+
+    function toggleTaskDone(id) {
+      const tasks = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]');
+      const task = tasks.find(t => t.id === id);
+      if (task) {
+        task.completed = !task.completed;
+        task.completedAt = task.completed ? new Date().toISOString() : undefined;
+        localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(tasks));
+        if (task.completed) {
+          playChime();
+          confetti({ particleCount: 35, spread: 50, origin: { y: 0.8 } });
+        } else {
+          playClick();
+        }
+        renderToday();
+        renderDone();
+      }
+    }
+
+    function deleteTask(id) {
+      playClick();
+      let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]');
+      tasks = tasks.filter(t => t.id !== id);
+      localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(tasks));
+      renderToday();
+      renderDone();
+    }
+
+    function rolloverMissed() {
+      playChime();
+      const today = getTodayStr();
+      const tasks = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]');
+      tasks.forEach(t => {
+        if (t.date < today && !t.completed) {
+          t.date = today;
+          t.rolledOver = true;
+        }
+      });
+      localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(tasks));
+      renderToday();
+    }
+
+    function dismissMissed() {
+      playClick();
+      const today = getTodayStr();
+      let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]');
+      tasks = tasks.filter(t => !(t.date < today && !t.completed));
+      localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(tasks));
+      renderToday();
+    }
+
+    // Modal Handlers
+    function openTaskModal(isSpontaneous = false) {
+      playClick();
+      document.getElementById('task-is-spontaneous').value = isSpontaneous ? 'true' : 'false';
+      document.getElementById('task-modal-title').innerText = isSpontaneous ? 'تسجيل إنجاز مفاجئ ✨' : 'إضافة مهمة جديدة';
+      document.getElementById('task-time-box').classList.toggle('hidden', isSpontaneous);
+      document.getElementById('task-title').value = '';
+      document.getElementById('task-notes').value = '';
+      document.getElementById('task-modal').classList.remove('hidden');
+    }
+    function closeTaskModal() {
+      document.getElementById('task-modal').classList.add('hidden');
+    }
+
+    function saveTask(e) {
+      e.preventDefault();
+      const title = document.getElementById('task-title').value.trim();
+      if (!title) return;
+      const isSpontaneous = document.getElementById('task-is-spontaneous').value === 'true';
+      const isTimed = document.getElementById('task-is-timed').checked;
+      const time = document.getElementById('task-time').value;
+      const priority = document.querySelector('input[name="priority"]:checked').value;
+      const today = getTodayStr();
+
+      const newTask = {
+        id: 't-' + Date.now(),
+        title,
+        notes: document.getElementById('task-notes').value.trim() || undefined,
+        date: today,
+        time: (isTimed && !isSpontaneous) ? time : undefined,
+        isTimeSpecific: isTimed && !isSpontaneous,
+        priority,
+        completed: isSpontaneous,
+        completedAt: isSpontaneous ? new Date().toISOString() : undefined,
+        isSpontaneous
+      };
+
+      const tasks = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]');
+      tasks.unshift(newTask);
+      localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(tasks));
+
+      if (isSpontaneous) playChime(); else playClick();
+      closeTaskModal();
+      renderToday();
+      renderDone();
+    }
+
+    // Where Is It Management
+    let selectedRoom = 'all';
+    const roomLabels = {
+      bedroom: 'غرفة النوم',
+      office: 'المكتب',
+      car: 'السيارة',
+      bag: 'الحقيبة',
+      living: 'الصالة / المدخل',
+      kitchen: 'المطبخ',
+      other: 'مكان آخر'
+    };
+
+    function renderItems() {
+      const items = JSON.parse(localStorage.getItem(STORAGE_KEY_ITEMS) || '[]');
+      const q = (document.getElementById('where-search')?.value || '').toLowerCase();
+
+      // Filters
+      const filterBox = document.getElementById('room-filter-container');
+      filterBox.innerHTML = `
+        <button onclick="setRoomFilter('all')" class="px-3 py-1.5 rounded-xl text-xs font-semibold border ${selectedRoom==='all'?'bg-sky-600 text-white border-sky-500':'bg-obsidian-950 text-slate-400 border-slate-800'}">الكل (${items.length})</button>
+        ${Object.keys(roomLabels).map(r => `
+          <button onclick="setRoomFilter('${r}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold border ${selectedRoom===r?'bg-sky-600 text-white border-sky-500':'bg-obsidian-950 text-slate-400 border-slate-800'}">${roomLabels[r]}</button>
+        `).join('')}
+      `;
+
+      const filtered = items.filter(it => {
+        const matchesQ = it.name.toLowerCase().includes(q) || it.location.toLowerCase().includes(q);
+        const matchesR = selectedRoom === 'all' || it.room === selectedRoom;
+        return matchesQ && matchesR;
+      });
+
+      const grid = document.getElementById('items-grid');
+      if (filtered.length === 0) {
+        grid.innerHTML = '<div class="col-span-2 rounded-2xl border border-dashed border-slate-800 p-8 text-center text-xs text-slate-500">لا توجد نتائج مطابقة لبحثك.</div>';
+      } else {
+        grid.innerHTML = filtered.map(it => `
+          <div class="elite-card p-4 sm:p-5 flex flex-col justify-between group">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-2">
+                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-sky-950/70 text-sky-300 border border-sky-500/30">${roomLabels[it.room]||'مكان'}</span>
+                <button onclick="deleteItem('${it.id}')" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 text-xs">🗑️ حذف</button>
+              </div>
+              <h3 class="text-base font-bold text-slate-100">${it.name}</h3>
+              <div class="mt-3 p-3 rounded-xl bg-obsidian-950 border border-sky-500/20 flex items-start gap-2">
+                <span class="text-sky-400">📍</span>
+                <p class="text-sm font-semibold text-sky-100 leading-relaxed">${it.location}</p>
+              </div>
+              ${it.notes ? `<p class="text-xs text-slate-400 mt-2">💡 ${it.notes}</p>` : ''}
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function setRoomFilter(r) {
+      playClick();
+      selectedRoom = r;
+      renderItems();
+    }
+
+    function openItemModal() {
+      playClick();
+      document.getElementById('item-name').value = '';
+      document.getElementById('item-location').value = '';
+      document.getElementById('item-notes').value = '';
+      document.getElementById('item-modal').classList.remove('hidden');
+    }
+    function closeItemModal() {
+      document.getElementById('item-modal').classList.add('hidden');
+    }
+
+    function saveItem(e) {
+      e.preventDefault();
+      const name = document.getElementById('item-name').value.trim();
+      const location = document.getElementById('item-location').value.trim();
+      if (!name || !location) return;
+
+      const items = JSON.parse(localStorage.getItem(STORAGE_KEY_ITEMS) || '[]');
+      items.unshift({
+        id: 'i-' + Date.now(),
+        name,
+        location,
+        room: document.getElementById('item-room').value,
+        notes: document.getElementById('item-notes').value.trim() || undefined,
+        updatedAt: new Date().toISOString()
+      });
+      localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(items));
+      playChime();
+      closeItemModal();
+      renderItems();
+    }
+
+    function deleteItem(id) {
+      playClick();
+      let items = JSON.parse(localStorage.getItem(STORAGE_KEY_ITEMS) || '[]');
+      items = items.filter(i => i.id !== id);
+      localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(items));
+      renderItems();
+    }
+
+    // Brain Dump
+    let speechActive = false;
+    let recognizer = null;
+
+    function toggleSpeech() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('ميزة التعرف الصوتي غير مدعومة في متصفحك الحالي، يمكنك الكتابة في الحقل مباشرة.');
+        return;
+      }
+      playClick();
+      const micStatus = document.getElementById('mic-status');
+
+      if (speechActive && recognizer) {
+        recognizer.stop();
+        speechActive = false;
+        micStatus.classList.add('hidden');
+        return;
+      }
+
+      recognizer = new SpeechRecognition();
+      recognizer.lang = 'ar-LY';
+      recognizer.interimResults = false;
+      recognizer.onresult = (e) => {
+        const text = e.results[0][0].transcript;
+        const input = document.getElementById('brain-input');
+        input.value = (input.value ? input.value + ' ' : '') + text;
+      };
+      recognizer.onend = () => {
+        speechActive = false;
+        micStatus.classList.add('hidden');
+      };
+      recognizer.start();
+      speechActive = true;
+      micStatus.classList.remove('hidden');
+    }
+
+    function addBrainNote() {
+      const input = document.getElementById('brain-input');
+      const text = input.value.trim();
+      if (!text) return;
+      playClick();
+      const notes = JSON.parse(localStorage.getItem(STORAGE_KEY_BRAIN) || '[]');
+      notes.unshift({ id: 'n-' + Date.now(), text, createdAt: new Date().toISOString() });
+      localStorage.setItem(STORAGE_KEY_BRAIN, JSON.stringify(notes));
+      input.value = '';
+      renderBrain();
+    }
+
+    function renderBrain() {
+      const notes = JSON.parse(localStorage.getItem(STORAGE_KEY_BRAIN) || '[]');
+      const list = document.getElementById('brain-notes-list');
+      if (notes.length === 0) {
+        list.innerHTML = '<div class="rounded-xl border border-dashed border-slate-800 p-8 text-center text-xs text-slate-500">لا توجد أفكار مسجلة حالياً.</div>';
+      } else {
+        list.innerHTML = notes.map(n => `
+          <div class="elite-card p-4 flex items-center justify-between gap-3 group">
+            <div class="flex items-center gap-3">
+              <span class="text-purple-400">⚡</span>
+              <p class="text-sm font-semibold text-slate-100">${n.text}</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="convertBrainToTask('${n.id}', '${encodeURIComponent(n.text)}')" class="tactile-btn px-3 py-1.5 rounded-lg text-xs font-bold bg-brand-950 text-brand-300 border border-brand-500/30">تحويل لمهمة اليوم</button>
+              <button onclick="deleteBrainNote('${n.id}')" class="p-1 text-slate-500 hover:text-red-400">🗑️</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+
+    function convertBrainToTask(noteId, textEncoded) {
+      const text = decodeURIComponent(textEncoded);
+      const tasks = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]');
+      tasks.unshift({
+        id: 't-' + Date.now(),
+        title: text,
+        date: getTodayStr(),
+        isTimeSpecific: false,
+        priority: 'important',
+        completed: false
+      });
+      localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(tasks));
+      deleteBrainNote(noteId);
+      playChime();
+      switchTab('today');
+    }
+
+    function deleteBrainNote(id) {
+      playClick();
+      let notes = JSON.parse(localStorage.getItem(STORAGE_KEY_BRAIN) || '[]');
+      notes = notes.filter(n => n.id !== id);
+      localStorage.setItem(STORAGE_KEY_BRAIN, JSON.stringify(notes));
+      renderBrain();
+    }
+
+    // Done Tasks
+    function renderDone() {
+      const tasks = JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]');
+      const done = tasks.filter(t => t.completed);
+      document.getElementById('done-count-badge').innerText = `${done.length} مهام`;
+      const list = document.getElementById('done-tasks-list');
+      if (done.length === 0) {
+        list.innerHTML = '<div class="rounded-2xl border border-dashed border-slate-800 p-8 text-center text-xs text-slate-500">لم تسجل إنجازات لليوم بعد.</div>';
+      } else {
+        list.innerHTML = done.map(t => `
+          <div class="elite-card p-4 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <span class="text-emerald-400 text-base">✅</span>
+              <div>
+                <h4 class="text-sm font-semibold text-slate-200">${t.title}</h4>
+                ${t.isSpontaneous ? '<span class="text-[10px] text-emerald-300 font-bold">إنجاز مفاجئ ✨</span>' : ''}
+              </div>
+            </div>
+            <button onclick="toggleTaskDone('${t.id}')" class="text-xs text-slate-400 hover:text-slate-200">تراجع ↩</button>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Sync / Backup
+    function openSyncModal() {
+      playClick();
+      document.getElementById('sync-modal').classList.remove('hidden');
+    }
+    function closeSyncModal() {
+      document.getElementById('sync-modal').classList.add('hidden');
+    }
+
+    function exportJSON() {
+      playClick();
+      const backup = {
+        tasks: JSON.parse(localStorage.getItem(STORAGE_KEY_TASKS) || '[]'),
+        items: JSON.parse(localStorage.getItem(STORAGE_KEY_ITEMS) || '[]'),
+        brain: JSON.parse(localStorage.getItem(STORAGE_KEY_BRAIN) || '[]'),
+        exportedAt: new Date().toISOString()
+      };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `thakirati_backup_${getTodayStr()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importJSON(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      playClick();
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target.result);
+          if (data.tasks) localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(data.tasks));
+          if (data.items) localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(data.items));
+          if (data.brain) localStorage.setItem(STORAGE_KEY_BRAIN, JSON.stringify(data.brain));
+          playChime();
+          const st = document.getElementById('sync-status');
+          st.innerText = 'تمت استعادة كافة البيانات بنجاح!';
+          st.classList.remove('hidden');
+          setTimeout(() => {
+            st.classList.add('hidden');
+            closeSyncModal();
+            renderToday();
+          }, 1200);
+        } catch {
+          alert('الملف غير صالح.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Initialize
+    loadInitialData();
+    renderToday();
+  </script>
+</body>
+</html>
