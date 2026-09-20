@@ -46,6 +46,7 @@ export interface QuickNote {
 }
 
 export interface AppSettings {
+  id?: string;
   userName: string;
   soundEnabled: boolean;
   notificationsEnabled: boolean;

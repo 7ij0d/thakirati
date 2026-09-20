@@ -24,12 +24,13 @@ export async function initializeDefaultData() {
   const settingsCount = await db.settings.count();
   if (settingsCount === 0) {
     await db.settings.add({
+      id: 'default',
       userName: 'طه',
       soundEnabled: true,
       notificationsEnabled: true,
       theme: 'obsidian',
       autoRolloverPrompt: true,
-    } as any);
+    });
   }
 
   const itemsCount = await db.items.count();
