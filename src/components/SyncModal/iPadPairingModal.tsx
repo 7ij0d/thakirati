@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Tablet, Download, Upload, QrCode, Check, Copy, Sparkles } from 'lucide-react';
+import { X, Tablet, Download, Upload, QrCode, Check, Copy, Monitor } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { exportAllDataAsJSON, importDataFromJSON } from '../../lib/sync';
 import { sound } from '../../lib/sound';
@@ -20,7 +20,6 @@ export const IPadPairingModal: React.FC<IPadPairingModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Current network URL hint
   const currentUrl = window.location.href;
 
   const handleCopyLink = () => {
@@ -71,10 +70,10 @@ export const IPadPairingModal: React.FC<IPadPairingModalProps> = ({
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-100">
-                الربط مع الآيباد والمزامنة
+                التثبيت كـ App والمزامنة
               </h2>
               <p className="text-xs text-slate-400">
-                افتح تطبيق "ذاكرتي" على شاشة الآيباد في ثوانٍ معدودة
+                تشغيل "ذاكرتي" كتطبيق مستقل على سطح المكتب والآيباد
               </p>
             </div>
           </div>
@@ -87,11 +86,26 @@ export const IPadPairingModal: React.FC<IPadPairingModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="mt-5 space-y-6">
+        <div className="mt-5 space-y-5">
+          {/* Section 0: Desktop App Info */}
+          <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-obsidian-950 to-obsidian-950 border border-emerald-500/30 space-y-2">
+            <div className="flex items-center gap-2 text-emerald-300 font-bold text-sm">
+              <Monitor size={17} />
+              <span>تطبيق سطح المكتب (Desktop App)</span>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              تم تجهيز تطبيق <strong>"ذاكرتي"</strong> للعمل كنافذة مستقلة بدون أشرطة متصفح:
+            </p>
+            <ul className="text-xs text-slate-400 space-y-1 list-disc list-inside pr-1">
+              <li>على جهازك الحالي، تم إنشاء أيقونة <strong>"ذاكرتي"</strong> مباشرة على سطح المكتب!</li>
+              <li>في متصفح Chrome أو Edge، يمكنك أيضاً الضغط على زر <strong className="text-emerald-300">تثبيت كـ App</strong> في شريط العناوين.</li>
+            </ul>
+          </div>
+
           {/* Section 1: QR Code for iPad */}
           <div className="p-5 rounded-2xl bg-obsidian-950 border border-slate-800 flex flex-col sm:flex-row items-center gap-5">
             <div className="bg-white p-3 rounded-xl shadow-lg shrink-0">
-              <QRCodeSVG value={currentUrl} size={130} level="M" />
+              <QRCodeSVG value={currentUrl} size={125} level="M" />
             </div>
 
             <div className="space-y-2 text-center sm:text-right">
@@ -135,7 +149,7 @@ export const IPadPairingModal: React.FC<IPadPairingModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 onClick={handleExport}
-                className="tactile-btn p-3.5 rounded-xl bg-obsidian-950 hover:bg-slate-800/80 border border-slate-800 flex items-center gap-3 text-right group"
+                className="tactile-btn p-3 rounded-xl bg-obsidian-950 hover:bg-slate-800/80 border border-slate-800 flex items-center gap-3 text-right group"
               >
                 <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
                   <Download size={16} />
@@ -148,7 +162,7 @@ export const IPadPairingModal: React.FC<IPadPairingModalProps> = ({
                 </div>
               </button>
 
-              <label className="tactile-btn cursor-pointer p-3.5 rounded-xl bg-obsidian-950 hover:bg-slate-800/80 border border-slate-800 flex items-center gap-3 text-right group">
+              <label className="tactile-btn cursor-pointer p-3 rounded-xl bg-obsidian-950 hover:bg-slate-800/80 border border-slate-800 flex items-center gap-3 text-right group">
                 <div className="w-8 h-8 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400 shrink-0">
                   <Upload size={16} />
                 </div>
@@ -172,17 +186,6 @@ export const IPadPairingModal: React.FC<IPadPairingModalProps> = ({
                 {importStatus}
               </p>
             )}
-          </div>
-
-          {/* Section 3: Cloud Deployment info */}
-          <div className="p-3.5 rounded-xl bg-gradient-to-r from-brand-950/40 to-slate-900 border border-brand-500/20 text-xs text-slate-300 flex items-start gap-2.5">
-            <Sparkles size={16} className="text-brand-400 shrink-0 mt-0.5" />
-            <div>
-              <span className="font-bold text-slate-100">نشر التطبيق على الإنترنت مجاناً:</span>
-              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">
-                التطبيق مجهّز للنشر بضغطة زر على Vercel أو Cloudflare Pages ليكون لك رابط خاص تفتحه من أي مكان في العالم!
-              </p>
-            </div>
           </div>
         </div>
       </div>

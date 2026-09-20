@@ -1,18 +1,31 @@
 {
-  "name": "ذاكرتي | المساعد اليومي",
+  "name": "ذاكرتي | المساعد الشخصي لمنع النسيان",
   "short_name": "ذاكرتي",
   "description": "المساعد الشخصي الذكي لتنظيم الأولويات وتتبع أماكن الأغراض ومنع النسيان",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#06080D",
   "theme_color": "#06080D",
   "orientation": "any",
   "icons": [
     {
-      "src": "/logo.svg",
-      "sizes": "192x192 512x512",
-      "type": "image/svg+xml",
+      "src": "./logo-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "./logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ]
 }

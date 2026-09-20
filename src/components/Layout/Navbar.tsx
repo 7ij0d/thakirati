@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Volume2, VolumeX, Tablet, Search, ShieldCheck } from 'lucide-react';
+import { Volume2, VolumeX, Tablet, Search, ShieldCheck, Download } from 'lucide-react';
 import { sound } from '../../lib/sound';
 
 interface NavbarProps {
@@ -15,6 +15,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [soundActive, setSoundActive] = useState(true);
   const [currentDateTime, setCurrentDateTime] = useState('');
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -34,7 +35,19 @@ export const Navbar: React.FC<NavbarProps> = ({
 
     updateTime();
     const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+
+    // Listen for PWA install prompt
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
 
   const toggleSound = () => {
@@ -44,13 +57,27 @@ export const Navbar: React.FC<NavbarProps> = ({
     if (nextState) sound.playTactileClick();
   };
 
+  const handleInstallClick = async () => {
+    sound.playTactileClick();
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    } else {
+      // Open sync modal where full install instructions exist
+      onOpenSync();
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-obsidian-950/80 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-6 py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         {/* Brand & Date */}
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center p-1.5 shadow-md shadow-brand-500/20">
-            <img src="/logo.svg" alt="ذاكرتي" className="w-full h-full" />
+            <img src="./logo.svg" alt="ذاكرتي" className="w-full h-full" />
           </div>
 
           <div>
@@ -71,6 +98,16 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Action Controls */}
         <div className="flex items-center gap-2">
+          {/* Install to Desktop / Home Screen button */}
+          <button
+            onClick={handleInstallClick}
+            className="tactile-btn flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/40 text-xs font-bold text-emerald-300 shadow-sm transition-all"
+            title="تثبيت التطبيق على سطح المكتب أو الآيباد"
+          >
+            <Download size={14} />
+            <span className="hidden xs:inline sm:inline">تثبيت كـ App</span>
+          </button>
+
           {/* Quick Find Item shortcut button if not already in where-is-it */}
           {activeTab !== 'where' && (
             <button
